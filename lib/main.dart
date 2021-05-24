@@ -28,7 +28,7 @@ class Home extends StatelessWidget{
       body: SafeArea(child: Container(child: ListView(children: <Widget>[
         FirstHalf()
       ]),),)
-    )
+    );
   }
 }
 
@@ -39,11 +39,53 @@ class FirstHalf extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(35, 25, 0, 0),
       child: Column(
         children: <Widget>[
-          CustomAppBar()
+          CustomAppBar(),
+        SizedBox(height:30),
+        title(),
+        SizedBox(height:30),
+        searchBar(),
+        SizedBox(height:30),
         ]
       ),
     );
   }
+}
+
+Widget searchBar(){
+return Row(
+  mainAxisAlignment: MainAxisAlignment.start,
+    children:<Widget>[
+    Icon(
+      Icons.search,
+      color: Colors.black45,
+    ),
+    SizedBox(width: 20,),
+    Expanded(
+      child: TextField(decoration: InputDecoration(hintText: "Search ...",
+      contentPadding:EdgeInsets.symmetric(vertical:10),
+      hintStyle: TextStyle(color: Colors.black87)),
+      
+    ))
+    ]
+);
+}
+
+Widget title(){
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children:<Widget>[
+      SizedBox(width: 45,),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("Food", style: TextStyle(fontWeight: FontWeight.w700,
+          fontSize: 30)),
+          Text("Delivery", style: TextStyle(fontWeight: FontWeight.w200,
+          fontSize: 30))
+        ]
+      )
+    ]
+  );
 }
 
 class CustomAppBar extends StatelessWidget {
