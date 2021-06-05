@@ -1,4 +1,7 @@
+import 'dart:js';
+
 import 'package:YummyMeals/bloc/cartListBloc.dart';
+import 'package:YummyMeals/model/foodItem.dart';
 import 'package:flutter/material.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 
@@ -8,7 +11,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  @override
+  @override 
   Widget build(BuildContext context) {
     return BlocProvider(
       blocs: [
@@ -26,8 +29,137 @@ class Home extends StatelessWidget{
   Widget build(BuildContext context){
     return Scaffold(
       body: SafeArea(child: Container(child: ListView(children: <Widget>[
-        FirstHalf()
-      ]),),)
+        FirstHalf(),
+        SizedBox(height:45),
+        for(var foodItem in fooditemList.foodItems)
+        ItemContainer(foodItem: foodItem)
+      ]
+      ),
+      ),
+      )
+    );
+  }
+}
+
+class ItemContainer extends StatelessWidget {
+
+  final FoodItem foodItem;
+  ItemContainer({@required this.foodItem});
+
+  final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
+
+  addToCart(FoodItem foodItem){
+    bloc.addToList(foodItem);
+    final snackBar = SnackBar(content: Text("${foodItem.title} added to the cart"),
+    duration: Duration(milliseconds: 550),
+    );
+    Scaffold.of(context).showSnackBar(snackbar);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: (){
+        addToCart(foodItem);
+      },
+      child: Items(
+        hotel: foodItem.hotel,
+        itemName: foodItem.title,
+        itemPrice: foodItem.price,
+        imgUrl: foodItem.imageUrl,
+        leftAligned: (foodItem.id % 2 == 0) ? true : false
+      ),
+    );
+  }
+}
+
+class Items extends StatelessWidget {
+  
+  final bool leftAligned;
+  final String imgUrl;
+  final String itemName;
+  final double itemPrice;
+  final String hotel;
+
+  Items({
+    @required this.leftAligned ,
+    @required this.imgUrl ,
+    @required this.itemName ,
+    @required this.itemPrice ,
+    @required this.hotel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    double containerPadding = 45;
+    double containerBorderRadius = 10;
+
+    return Column(
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.only(
+            left: leftAligned ? 0 : containerPadding,
+            right: leftAligned ? containerPadding : 0,
+          ),
+          child: Column(
+            children: <Widget>[
+              Container(width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.horizontal(
+                  left: leftAligned ? Radius.circular(0) : Radius.circular(containerBorderRadius),
+                  right: leftAligned ? Radius.circular(0) : Radius.circular(containerBorderRadius),
+                  ),
+                  child: Image.network(imgUrl,
+                  fit: BoxFit.fill),
+                  ),
+                  ),
+                  SizedBox(height:20),
+                  Container(
+                    padding: EdgeInsets.only(
+                      left: leftAligned ? 20 : 0,
+                      right: leftAligned ? 0: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(children: <Widget>[
+                          Expanded(child: Text(
+                            itemName,
+                            style: TextStyle(fontWeight: FontWeight.w700,
+                            fontSize: 18)
+                          ),
+                          ),
+                          Text("\$$itemPrice",
+                          style: TextStyle(fontWeight: FontWeight.w700,
+                          fontSize: 18),
+                          )
+                        ],
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: RichText(text: TextSpan(style: TextStyle(color: Colors.black45,
+                          fontSize: 15),
+                          children: [
+                            TextSpan(text: "by "),
+                            TextSpan(text: hotel,
+                            style: TextStyle(fontWeight: FontWeight.w700)
+                            )
+                          ]
+                          ),
+                          )
+                        ),
+                        SizedBox(height: containerPadding)
+                      ]
+                    ),
+                    )
+            ]
+          ),
+        )
+      ],
     );
   }
 }
@@ -62,6 +194,42 @@ Widget categories(){
         categoryName: "Burgers",
         availability: 12,
         selected: true
+      ),
+      CategoryListItem(
+        categoryIcon: Icons.bug_report,
+        categoryName: "Pizza",
+        availability: 12,
+        selected: false
+      ),
+      CategoryListItem(
+        categoryIcon: Icons.bug_report,
+        categoryName: "Rools",
+        availability: 12,
+        selected: false
+      ),
+      CategoryListItem(
+        categoryIcon: Icons.bug_report,
+        categoryName: "Burger",
+        availability: 12,
+        selected: false
+      ),
+      CategoryListItem(
+        categoryIcon: Icons.bug_report,
+        categoryName: "Pizza",
+        availability: 12,
+        selected: false
+      ),
+      CategoryListItem(
+        categoryIcon: Icons.bug_report,
+        categoryName: "Rools",
+        availability: 12,
+        selected: false
+      ),
+      CategoryListItem(
+        categoryIcon: Icons.bug_report,
+        categoryName: "Moms",
+        availability: 12,
+        selected: false
       )
     ]
   ),
@@ -106,17 +274,30 @@ Widget title(){
 }
 
 class CustomAppBar extends StatelessWidget {
+
+  final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right:30),
-      child: Text("0"),
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.yellow[800],
-        borderRadius: BorderRadius.circular(50)
+      margin: EdgeInsets.only(bottom:15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Icon(Icons.menu),
+          StreamBuilder(stream:bloc.listStream,
+          builder: (context, snapshot){
+            List<FoodItem> foodItems = snapshot.data;
+            int length = FoodItem != null ? foodItems.length : 0;
+
+            return buildGestureDetector(length, context, foodItems);
+          },)
+        ],
       ),
     );
+  }
+
+  GestureDetector buildGestureDetector( int length, BuildContext context, List<FoodItem> foodItems){
+    return GestureDetector(onTap: (){},);
   }
 }
 
@@ -176,11 +357,22 @@ CategoryListItem(
             SizedBox(height:10),
             Text(
               categoryName,
-              style: TextStyle(color: Colors.black,
+              style: TextStyle(
+                color: Colors.black,
               fontWeight: FontWeight.w700),
             ),
             Container(
               margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+              width: 1.5,
+              height: 15,
+              color: Colors.black26,
+            ),
+            Text(
+              availability.toString(),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.black
+              ),
             )
         ],
       ),
