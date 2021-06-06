@@ -1,9 +1,8 @@
-import 'dart:js';
-
 import 'package:YummyMeals/bloc/cartListBloc.dart';
 import 'package:YummyMeals/model/foodItem.dart';
 import 'package:flutter/material.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'cart.dart';
 
 void main() {
   runApp(MyApp());
@@ -48,19 +47,19 @@ class ItemContainer extends StatelessWidget {
 
   final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
 
-  addToCart(FoodItem foodItem){
+  addToCart(FoodItem foodItem, BuildContext context){
     bloc.addToList(foodItem);
     final snackBar = SnackBar(content: Text("${foodItem.title} added to the cart"),
     duration: Duration(milliseconds: 550),
     );
-    Scaffold.of(context).showSnackBar(snackbar);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);  
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        addToCart(foodItem);
+        addToCart(foodItem, context);
       },
       child: Items(
         hotel: foodItem.hotel,
@@ -297,7 +296,14 @@ class CustomAppBar extends StatelessWidget {
   }
 
   GestureDetector buildGestureDetector( int length, BuildContext context, List<FoodItem> foodItems){
-    return GestureDetector(onTap: (){},);
+    return GestureDetector(onTap: (){
+      if(length > 0){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Cart()));
+      } else {
+        return;
+      }
+    },
+    );
   }
 }
 
