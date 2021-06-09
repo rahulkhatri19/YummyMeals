@@ -1,5 +1,4 @@
 import 'package:YummyMeals/bloc/cartListBloc.dart';
-import 'package:YummyMeals/main.dart';
 import 'package:YummyMeals/model/foodItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,12 +21,177 @@ class Cart extends StatelessWidget {
               child: Container(
                 child: CartBody(foodItems),
                 ),
-                )
+                ),
+                bottomNavigationBar: BottomBar(foodItems),
           );
+        } else {
+          return Container();
         }
       },
     );
   }
+}
+
+class BottomBar extends StatelessWidget {
+
+  final List<FoodItem> foodItems;
+
+  BottomBar(this.foodItems);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 35, bottom: 25),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          totalAmount(foodItems),
+          Divider(
+            height: 1,
+            color: Colors.grey[700],
+          ),
+          persons(),
+          nextButtonbar()
+        ],
+        ),
+    );
+  }
+}
+
+Container nextButtonbar(){
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text("15-25 min",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w800),
+          ),
+          Text("Next",
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 16))
+      ]
+    ),
+    margin: EdgeInsets.only(right:25),
+    padding: EdgeInsets.all(25),
+    decoration: BoxDecoration(
+      color: Color(0xfffeb324),
+      borderRadius: BorderRadius.circular(15)
+    ),
+    );
+}
+
+Container persons(){
+  return Container(
+    margin: EdgeInsets.only(right: 10),
+    padding: EdgeInsets.symmetric(vertical: 30),
+    child: Row(
+      children: <Widget>[
+        Text("Person", 
+        style: TextStyle(fontSize: 14,
+        fontWeight: FontWeight.w700),
+        ),
+        CustomPersonWidget()
+      ],
+    ),
+    );
+}
+
+class CustomPersonWidget extends StatefulWidget {
+  @override
+  _CustomPersonWidgetState createState() => _CustomPersonWidgetState();
+}
+
+class _CustomPersonWidgetState extends State<CustomPersonWidget> {
+
+  int noOfPersons = 1;
+  double _buttonWidth = 30;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right:25),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300], width: 2),
+        borderRadius: BorderRadius.circular(10)
+      ),
+      padding: EdgeInsets.symmetric(vertical:5),
+      width: 120,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          SizedBox(width: _buttonWidth,
+          height: _buttonWidth,
+          child: FlatButton(onPressed: (){
+            setState(() {
+              if(noOfPersons > 1){
+                noOfPersons--;
+              }
+            });
+          }, child: Text("-", 
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 20
+          ),
+          ),
+          )
+          ),
+          Text(
+            noOfPersons.toString(),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+          ),
+          SizedBox(width: _buttonWidth,
+          height: _buttonWidth,
+          child: FlatButton(onPressed: (){
+            setState(() {
+              noOfPersons++;
+            });
+          }, child: Text("+", 
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 20
+          ),
+          ),
+          )
+          ),
+        ]  
+      ),
+    );
+  }
+}
+
+Container totalAmount(List<FoodItem> foodItem){
+  return Container(
+    margin: EdgeInsets.only(right:10),
+    padding: EdgeInsets.all(25),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text("Total:",
+        style: TextStyle(fontSize: 25,
+        fontWeight: FontWeight.w300
+        ),
+        ),
+        Text("\$${returnTotalAmount(foodItem)}", 
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 28),
+          ),
+      ]
+    ),
+
+  );
+}
+
+String returnTotalAmount(List<FoodItem> foodItems){
+
+double totalAmount = 0.0;
+
+for(int i=0; i<foodItems.length; i++){
+  totalAmount = totalAmount + foodItems[i].price * foodItems[i].quantity;
+}
+return totalAmount.toStringAsFixed(2);
 }
 
 class CartBody extends StatelessWidget {
@@ -75,7 +239,7 @@ return ListView.builder(
   itemBuilder: (builder, index){
     return CartListItem(foodItem: foodItems[index]);
   }
-  )
+  );
 }
 
 Widget title(){
@@ -139,7 +303,26 @@ class ItemContent extends StatelessWidget {
             width: 80
           ),
           ),
-          RichText(text: )
+          RichText(
+            text: TextSpan(
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontWeight: FontWeight.w700
+              ),
+              children: [
+                TextSpan(text: foodItem.quantity.toString()),
+                TextSpan(text: " x "),
+                TextSpan(text: foodItem.title)
+              ]
+            )
+            ),
+            Text(
+              "\s${foodItem.quantity * foodItem.price}",
+              style: TextStyle(
+                color: Colors.grey[300], 
+                fontWeight: FontWeight.w400),
+            )
         ],
         ),
     );
