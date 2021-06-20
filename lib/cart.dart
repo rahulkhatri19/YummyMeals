@@ -210,7 +210,7 @@ class CartBody extends StatelessWidget {
           title(),
           Expanded(
             flex: 1,
-            child: foodItems.length > 0 ? foodItemList() : noItemContainer())
+            child: foodItems.length > 0 ? foodItemList(foodItems) : noItemContainer())
         ],),
     );
   }
@@ -233,7 +233,7 @@ Container noItemContainer(){
         );
 }
 
-ListView foodItemList(){
+ListView foodItemList(List<FoodItem> foodItems){
 return ListView.builder(
   itemCount: foodItems.length,
   itemBuilder: (builder, index){
@@ -286,7 +286,7 @@ class ItemContent extends StatelessWidget {
 
   final FoodItem foodItem;
 
-  ItemContent({@required this.foodItem});
+  ItemContent(this.foodItem);
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:YummyMeals/bloc/provider.dart';
 import 'package:YummyMeals/model/foodItem.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';

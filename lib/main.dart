@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'cart.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -18,7 +16,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(title: "Food Delivery",
       home: Home(),
-      debugShowCheckedModeBanner: false,),
+      ),
     );
   }
 }
@@ -27,9 +25,12 @@ class Home extends StatelessWidget{
   @override 
   Widget build(BuildContext context){
     return Scaffold(
-      body: SafeArea(child: Container(child: ListView(children: <Widget>[
-        FirstHalf(),
-        SizedBox(height:45),
+      body: SafeArea(
+        child: Container(
+          child: ListView(
+            children: <Widget>[
+            FirstHalf(),
+            SizedBox(height:45),
         for(var foodItem in fooditemList.foodItems)
         ItemContainer(foodItem: foodItem)
       ]
@@ -170,7 +171,7 @@ class FirstHalf extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(35, 25, 0, 0),
       child: Column(
         children: <Widget>[
-          CustomAppBar(),
+        CustomAppBar(),
         SizedBox(height:30),
         title(),
         SizedBox(height:30),
@@ -286,7 +287,7 @@ class CustomAppBar extends StatelessWidget {
           StreamBuilder(stream:bloc.listStream,
           builder: (context, snapshot){
             List<FoodItem> foodItems = snapshot.data;
-            int length = FoodItem != null ? foodItems.length : 0;
+            int length = foodItems != null ? foodItems.length : 0;
 
             return buildGestureDetector(length, context, foodItems);
           },)
@@ -296,14 +297,27 @@ class CustomAppBar extends StatelessWidget {
   }
 
   GestureDetector buildGestureDetector( int length, BuildContext context, List<FoodItem> foodItems){
-    return GestureDetector(onTap: (){
-      if(length > 0){
+    return GestureDetector(
+            onTap: (){
+               if(length > 0){
         Navigator.push(context, MaterialPageRoute(builder: (context) => Cart()));
       } else {
         return;
       }
-    },
-    );
+            },
+              child: Container(
+              margin: EdgeInsets.only(right:30),
+              child: Text(length.toString()),
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(color: Colors.yellow[800],
+              borderRadius: BorderRadius.circular(50)),
+              ),
+          );
+    
+    // GestureDetector(onTap: (){
+    //  
+    // },
+    // );
   }
 }
 
@@ -328,8 +342,8 @@ CategoryListItem(
     return Container(
       margin: EdgeInsets.only(right:20),
       padding: EdgeInsets.fromLTRB(10, 10, 10, 20),
-      decoration: BoxDecoration(borderRadius:BorderRadius.circular(5),
-      color: selected ? Color(0xffeb324): Colors.white,
+      decoration: BoxDecoration(borderRadius:BorderRadius.circular(50),
+      color: selected ? Color(0xfffeb324): Colors.white,
       border: Border.all(
         color: selected ? Colors.transparent: Colors.grey[200],
         width: 1.5
